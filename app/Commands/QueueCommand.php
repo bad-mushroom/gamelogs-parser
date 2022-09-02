@@ -16,12 +16,8 @@ use SplFileInfo;
 /**
  * Queue command.
  */
-class Queue extends Command
+class QueueCommand extends AbstractLogCommand
 {
-    public const STATUS_INCOMING = 1;
-    public const STATUS_QUEUED = 2;
-    public const STATUS_OUTGOING = 3;
-
     /**
      * The signature of the command.
      *
@@ -66,18 +62,22 @@ class Queue extends Command
                 $hash = md5_file($file);
 
                 try {
-                    $this->createGamelogFromFile($file, $hash);
-                    $this->info($file->getFilename() . ' has been queued.');
+                    $this->task('Checking ' . $file->getFilename(), function () use ($file, $hash) {
+                        $this->createGamelogFromFile($file, $hash);
+                    });
                 } catch (Exception $e) {
                     $this->error($e->getMessage());
 
                     continue;
                 }
 
-                $source = env('DIR_GAMELOGS_INCOMING') . DIRECTORY_SEPARATOR . $file->getFilename();
-                $destination = env('DIR_GAMELOGS_QUEUED') . DIRECTORY_SEPARATOR . $hash . '.log';
+                $this->task('Queuing ' . $file->getFilename(), function() use ($file, $hash) {
+                    $source = env('DIR_GAMELOGS_INCOMING') . DIRECTORY_SEPARATOR . $file->getFilename();
+                    $destination = env('DIR_GAMELOGS_QUEUED') . DIRECTORY_SEPARATOR . $hash . '.log';
 
-                Storage::disk('gamelogs')->move($source, $destination);
+                    return Storage::disk('gamelogs')->move($source, $destination);
+                });
+
             }
         }
     }
@@ -114,7 +114,7 @@ class Queue extends Command
                 'id'                => Str::uuid(),
                 'hash'              => $hash,
                 'original_filename' => $file->getFilename(),
-                'status'            => self::STATUS_INCOMING,
+                'status'            => self::STATUS_QUEUED,
                 'created_at'        => Carbon::now(),
                 'updated_at'        => Carbon::now(),
             ]);

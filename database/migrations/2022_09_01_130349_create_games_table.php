@@ -13,11 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('gamelogs', function (Blueprint $table) {
+        Schema::create('games', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('hash', 32)->unique();
-            $table->string('original_filename');
-            $table->tinyInteger('status')->default(1);
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->string('identifier');
+            $table->string('parser');
             $table->timestamps();
         });
     }
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('gamelogs');
+        Schema::dropIfExists('games');
     }
 };

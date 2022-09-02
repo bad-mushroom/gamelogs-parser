@@ -13,11 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('gamelogs', function (Blueprint $table) {
+        Schema::create('players', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('hash', 32)->unique();
-            $table->string('original_filename');
-            $table->tinyInteger('status')->default(1);
+            $table->string('match_id'); //->constrained('matches');
+            $table->integer('match_player');
+            $table->string('name')->nullable();
+            $table->string('team')->nullable();
+            $table->string('match_connect_time')->nullable();
+            $table->string('match_join_time')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('gamelogs');
+        Schema::dropIfExists('players');
     }
 };
