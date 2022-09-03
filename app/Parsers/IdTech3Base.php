@@ -9,6 +9,11 @@ use Illuminate\Support\Str;
 
 class IdTech3Base extends AbstractParser
 {
+    /**
+     * Log file events to parse.
+     *
+     * @var array
+     */
     protected $actions = [
         'InitGame',
         'ClientConnect',
@@ -21,11 +26,26 @@ class IdTech3Base extends AbstractParser
         'ShutdownGame',
     ];
 
+    /**
+     * Match to parse its data for.
+     *
+     * @var GameMatch
+     */
     protected GameMatch $match;
 
+    /**
+     * Parse match activity.
+     *
+     * @param GameMatch $match
+     * @param array $config
+     * @return void
+     */
     public function parse(GameMatch $match, array $config)
     {
         $this->match = $match;
+        $this->match->update([
+            'flags' => json_encode($config),
+        ]);
 
         foreach ($this->matchEvents as $event) {
             preg_match('/[0-9]+:[0-9]+ ([^:]+)/', $event, $eventDetails);
@@ -41,6 +61,13 @@ class IdTech3Base extends AbstractParser
 
     // -- Match
 
+    /**
+     * Start of match.
+     *
+     * @param string $time
+     * @param string $event
+     * @return void
+     */
     public function parseInitgame(string $time, string $event)
     {
         $this->match->update([
@@ -48,6 +75,13 @@ class IdTech3Base extends AbstractParser
         ]);
     }
 
+    /**
+     * End of match.
+     *
+     * @param string $time
+     * @param string $event
+     * @return void
+     */
     public function parseShutdowngame(string $time, string $event)
     {
         $this->match->update([
@@ -55,6 +89,13 @@ class IdTech3Base extends AbstractParser
         ]);
     }
 
+    /**
+     * End of match due to time or event limit.
+     *
+     * @param string $time
+     * @param string $event
+     * @return void
+     */
     public function parseExit(string $time, string $event)
     {
         // Match limit hit
@@ -62,6 +103,13 @@ class IdTech3Base extends AbstractParser
 
     // -- Players
 
+    /**
+     * Player connected.
+     *
+     * @param string $time
+     * @param string $event
+     * @return Player
+     */
     public function parseClientconnect(string $time, string $event): Player
     {
         $details = $this->stringToArray($event);
@@ -75,6 +123,13 @@ class IdTech3Base extends AbstractParser
         ]);
     }
 
+    /**
+     * Player began match.
+     *
+     * @param string $time
+     * @param string $event
+     * @return void
+     */
     public function parseClientbegin(string $time, string $event)
     {
         $details = $this->stringToArray($event);
@@ -88,6 +143,13 @@ class IdTech3Base extends AbstractParser
             ]);
     }
 
+    /**
+     * Player changed their settings (name, model, etc).
+     *
+     * @param string $time
+     * @param string $event
+     * @return void
+     */
     public function parseClientuserinfochanged(string $time, string $event)
     {
         $details = $this->stringToArray($event);
@@ -104,6 +166,13 @@ class IdTech3Base extends AbstractParser
 
     // -- Match Events
 
+    /**
+     * Played killed.
+     *
+     * @param string $time
+     * @param string $event
+     * @return Activity
+     */
     public function parseKill(string $time, string $event): Activity
     {
         $eventDetails = $this->stringToArray($event);
@@ -119,6 +188,13 @@ class IdTech3Base extends AbstractParser
         ]);
     }
 
+    /**
+     * Item interacted with.
+     *
+     * @param string $time
+     * @param string $event
+     * @return void
+     */
     public function parseItem(string $time, string $event)
     {
         $eventDetails = $this->stringToArray($event);
@@ -135,6 +211,13 @@ class IdTech3Base extends AbstractParser
 
     // -- Misc
 
+    /**
+     * Chat message.
+     *
+     * @param string $time
+     * @param string $event
+     * @return void
+     */
     public function parseSay(string $time, string $event)
     {
         $eventDetails = $this->stringToArray($event, ':');

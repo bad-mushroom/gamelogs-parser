@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use LaravelZero\Framework\Commands\Command;
 use SplFileInfo;
 
 /**
@@ -43,6 +42,17 @@ class QueueCommand extends AbstractLogCommand
     ];
 
     /**
+     * Define the command's schedule.
+     *
+     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @return void
+     */
+    public function schedule(Schedule $schedule): void
+    {
+        // $schedule->command(static::class)->everyMinute();
+    }
+
+    /**
      * Queue log files for parsing.
      *
      * Scans "incoming" log directory for files that have not already been parsed
@@ -55,15 +65,15 @@ class QueueCommand extends AbstractLogCommand
     {
         $files = File::allFiles(storage_path('gamelogs') . DIRECTORY_SEPARATOR . env('DIR_GAMELOGS_INCOMING'));
 
-        $this->info(count($files) . ' Game ' . Str::plural('log', count($files)) .' to Parse');
+        $this->info(count($files) . ' Game ' . Str::plural('log', count($files)) .' to Queue');
 
         foreach ($files as $file) {
-            if ($file->isReadable() && !in_array($file->getFilename(), $this->ignoredFiles)) {
+            if ($this->isReadableFile($file)) {
                 $hash = md5_file($file);
 
                 try {
                     $this->task('Checking ' . $file->getFilename(), function () use ($file, $hash) {
-                        $this->createGamelogFromFile($file, $hash);
+                        return $this->createGamelogFromFile($file, $hash);
                     });
                 } catch (Exception $e) {
                     $this->error($e->getMessage());
@@ -77,20 +87,10 @@ class QueueCommand extends AbstractLogCommand
 
                     return Storage::disk('gamelogs')->move($source, $destination);
                 });
-
+            } else {
+                $this->error('Unreadable file found at ' . $file->getFilename());
             }
         }
-    }
-
-    /**
-     * Define the command's schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
-     */
-    public function schedule(Schedule $schedule): void
-    {
-        // $schedule->command(static::class)->everyMinute();
     }
 
     /**
@@ -103,20 +103,30 @@ class QueueCommand extends AbstractLogCommand
      */
     protected function createGamelogFromFile(SplFileInfo $file, string $hash): bool
     {
-        $existing = DB::scalar('select count(id) from gamelogs where hash = ?', [$hash]);
-
-        if ($existing) {
+        if (DB::scalar('select count(hash) from gamelogs where hash = ?', [$hash])) {
             throw new DuplicateGamelogException($file->getFilename() . ' has alrady been parsed. Skipping.');
         }
 
         return DB::table('gamelogs')
             ->insert([
-                'id'                => Str::uuid(),
                 'hash'              => $hash,
                 'original_filename' => $file->getFilename(),
+                'filename'          => $hash . '.log',
                 'status'            => self::STATUS_QUEUED,
                 'created_at'        => Carbon::now(),
-                'updated_at'        => Carbon::now(),
             ]);
+    }
+
+    /**
+     * Determine if file is readable, not ignored, and is not binary.
+     *
+     * @param SplFileInfo $file
+     * @return boolean
+     */
+    protected function isReadableFile(SplFileInfo $file)
+    {
+        return $file->isReadable()
+            && !in_array($file->getFilename(), $this->ignoredFiles)
+            && !mb_detect_encoding((string) $file, null, true);
     }
 }

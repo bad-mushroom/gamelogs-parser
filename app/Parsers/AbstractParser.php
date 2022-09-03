@@ -2,14 +2,21 @@
 
 namespace App\Parsers;
 
-use App\Models\Game;
-
 abstract class AbstractParser
 {
+    /**
+     * Match activities.
+     *
+     * @var array
+     */
     protected array $matchEvents;
 
-    protected Game $game;
-
+    /**
+     * Set match events.
+     *
+     * @param array $matchEvents
+     * @return void
+     */
     public function matchEvents(array $matchEvents)
     {
         $this->matchEvents = $matchEvents;
@@ -17,28 +24,35 @@ abstract class AbstractParser
         return $this;
     }
 
-    public function game(Game $game)
-    {
-        $this->game = $game;
-
-        return $this;
-    }
-
-    public function stringToArray($string, $delimiter = ' '): array
+    /**
+     * Utitlty to split a string by a delimiting character.
+     *
+     * @param string $string
+     * @param string $delimiter
+     * @return array
+     */
+    public function stringToArray(string $string, $delimiter = ' '): array
     {
         return explode($delimiter, trim($string));
     }
 
+    /**
+     * Create key-value pairs of config data.
+     *
+     * @param string $params
+     * @return array
+     */
     public function mapConfigValues(string $params): array
     {
-        $gameInfo = [];
+        $configInfo = [];
         $info = explode('\\', $params);
         array_shift($info);
 
         foreach (array_chunk($info, 2) as $keys => $value) {
-            $gameInfo[$value[0]] = $value[1];
+            $configInfo[$value[0]] = $value[1];
         }
 
-        return $gameInfo;
+        return $configInfo;
     }
+
 }

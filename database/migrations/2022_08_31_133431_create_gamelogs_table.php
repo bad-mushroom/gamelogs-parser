@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('gamelogs', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('hash', 32)->unique();
+            $table->string('hash', 32)->primary();
             $table->string('original_filename');
+            $table->string('filename');
             $table->tinyInteger('status')->default(1);
-            $table->timestamps();
+            $table->timestamp('created_at');
         });
     }
 
