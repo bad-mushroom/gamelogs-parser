@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignIdFor('match_id')->constrained('matches')->onDelete('cascade');
+            $table->foreignUuid('match_id')->constrained('matches')->onDelete('cascade');
             $table->integer('match_player');
             $table->integer('target_player')->nullable();
             $table->string('action');
