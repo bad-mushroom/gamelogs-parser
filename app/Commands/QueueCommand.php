@@ -63,7 +63,7 @@ class QueueCommand extends AbstractLogCommand
      */
     public function handle()
     {
-        $files = File::allFiles(storage_path('gamelogs') . DIRECTORY_SEPARATOR . env('DIR_GAMELOGS_INCOMING'));
+        $files = File::allFiles($this->storagePath() . DIRECTORY_SEPARATOR . env('DIR_GAMELOGS_INCOMING'));
 
         $this->info(count($files) . ' Game ' . Str::plural('log', count($files)) .' to Queue');
 
@@ -82,10 +82,10 @@ class QueueCommand extends AbstractLogCommand
                 }
 
                 $this->task('Queuing ' . $file->getFilename(), function() use ($file, $hash) {
-                    $source = env('DIR_GAMELOGS_INCOMING') . DIRECTORY_SEPARATOR . $file->getFilename();
-                    $destination = env('DIR_GAMELOGS_QUEUED') . DIRECTORY_SEPARATOR . $hash . '.log';
+                    $source = $this->storagePath() . DIRECTORY_SEPARATOR . env('DIR_GAMELOGS_INCOMING') . DIRECTORY_SEPARATOR . $file->getFilename();
+                    $destination = $this->storagePath() . DIRECTORY_SEPARATOR . env('DIR_GAMELOGS_QUEUED') . DIRECTORY_SEPARATOR . $hash . '.log';
 
-                    return Storage::disk('gamelogs')->move($source, $destination);
+                    return File::move($source, $destination);
                 });
             } else {
                 $this->error('Unreadable file found at ' . $file->getFilename());
@@ -127,6 +127,6 @@ class QueueCommand extends AbstractLogCommand
     {
         return $file->isReadable()
             && !in_array($file->getFilename(), $this->ignoredFiles)
-            && !mb_detect_encoding((string) $file, null, true);
+            && mb_detect_encoding((string) $file, null, true) === 'ASCII';
     }
 }

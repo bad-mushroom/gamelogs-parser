@@ -15,16 +15,19 @@ return new class extends Migration
     {
         Schema::create('matches', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('game_id')->constrained('games');
+            $table->string('game_id');
+            $table->foreign('game_id')->references('id')->on('games')->onDelete('cascade');
             $table->string('hash', 32)->unique();
             $table->string('gamename')->nullable();
             $table->string('gametype')->nullable();
+            $table->string('mapname')->nullable();
             $table->string('start_time')->nullable();
             $table->string('end_time')->nullable();
             $table->string('hostname')->nullable();
             $table->string('event_limit')->nullable();
             $table->string('time_limit')->nullable();
             $table->json('flags')->nullable();
+            $table->string('version')->nullable();
             $table->timestamps();
         });
     }

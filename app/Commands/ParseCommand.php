@@ -52,42 +52,48 @@ class ParseCommand extends AbstractLogCommand
         $gamelog = DB::table('gamelogs')
             ->where('status', self::STATUS_QUEUED)
             ->where('hash', $hash)
-            ->limit(1);
+            ->first();
 
         if ($gamelog) {
-            $fileHandle = fopen(storage_path('gamelogs') . DIRECTORY_SEPARATOR . env('DIR_GAMELOGS_QUEUED') . DIRECTORY_SEPARATOR . $gamelog->filename, 'r');
-        }
+            $fileHandle = fopen($this->storagePath() . DIRECTORY_SEPARATOR . env('DIR_GAMELOGS_QUEUED') . DIRECTORY_SEPARATOR . $gamelog->filename, 'r');
+            $inMatch = false;
+            $match = [];
 
-        $inMatch = false;
-        $match = [];
+            while (!feof($fileHandle)) {
+                $row = trim(fgets($fileHandle));
 
-        while (!feof($fileHandle)) {
-            $row = trim(fgets($fileHandle));
+                // Check for match initialization string
+                if (strpos($row, 'InitGame:')) {
+                    $inMatch = true;
+                    $match[] = $row;
+                    $this->parser = Parser::load($row);
 
-            // Check for match initialization string
-            if (strpos($row, 'InitGame:')) {
-                $inMatch = true;
-                $match[] = $row;
-                $this->parser = Parser::load($row);
+                // Check for match shutdown string
+                } elseif (strpos($row, 'ShutdownGame:') && $inMatch === true) {
+                    $match[] = $row;
+                    $ran = $this->parser->matchEvents($match)->run();
 
-            // Check for match shutdown string
-            } elseif (strpos($row, 'ShutdownGame:') && $inMatch === true) {
-                $match[] = $row;
-                $this->parser->matchEvents($match)->run();
-                $inMatch = false;
-                $match = [];
+                    if ($ran) {
+                        DB::table('gamelogs')
+                            ->where(['hash' => $hash])
+                            ->update(['status' => self::STATUS_COMPLETE]);
+                    }
 
-            // If in a match, continue capturing data
-            } elseif ($inMatch === true) {
-                $match[] = $row;
+                    $inMatch = false;
+                    $match = [];
 
-            // If not in a match, disregard data
-            } else {
-                //
+                // If in a match, continue capturing data
+                } elseif ($inMatch === true) {
+                    $match[] = $row;
+
+                // If not in a match, disregard data
+                } else {
+                    //
+                }
             }
-        }
 
-        fclose($fileHandle);
+            fclose($fileHandle);
+        }
     }
 
 }

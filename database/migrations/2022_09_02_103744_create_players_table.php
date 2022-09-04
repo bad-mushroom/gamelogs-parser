@@ -15,12 +15,13 @@ return new class extends Migration
     {
         Schema::create('players', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->string('match_id'); //->constrained('matches');
+            $table->foreignUuid('match_id')->constrained('matches')->onDelete('cascade');
             $table->integer('match_player');
             $table->string('name')->nullable();
             $table->string('team')->nullable();
             $table->string('match_connect_time')->nullable();
             $table->string('match_join_time')->nullable();
+            $table->boolean('is_bot')->false();
             $table->timestamps();
         });
     }

@@ -23,5 +23,25 @@ class Player extends Model
     {
         return $this->belongsTo(GameMatch::class);
     }
+
+    /**
+     * PK Does not increments
+     *
+     * @return bool
+     */
+    public function getIncrementing()
+    {
+        return false;
+    }
+
+    /**
+     * PK is a string
+     *
+     * @return string
+     */
+    public function getKeyType()
+    {
+        return 'string';
+    }
 }
 

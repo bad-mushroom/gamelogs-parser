@@ -14,7 +14,7 @@ A simple stand-alone command-line utility for parsing idtech  based log files su
 
 ### Queue Log Files
 
-All log files are stored in an "incoming" directory where the queue command will scan, deduplicate, and prep the file for being parsed.
+All log files are stored in an "incoming" directory where the queue command will scan, de-duplicate, and prep the file for being parsed.
 
 ```
 ./gamelogs logs:queue
@@ -23,6 +23,8 @@ All log files are stored in an "incoming" directory where the queue command will
 ### Parse Log File
 
 Once a log file has been queued, the parsing command will take over. The parser will automatically determine the game/mod contained withing the log file and call the appropriate class file configured for that spaecific game.
+
+The parser will also attempt to de-duplicate individual matches and ignore incomplete ones.
 
 ```
 ./gamelogs logs:parse <log-hash>

@@ -57,6 +57,8 @@ class IdTech3Base extends AbstractParser
                 $this->$method($time, $event);
             }
         }
+
+        return true;
     }
 
     // -- Match
@@ -156,11 +158,13 @@ class IdTech3Base extends AbstractParser
         $matchPlayerId = $details[2];
         $playerInfo = $this->mapConfigValues('\\' . $details[3]);
 
+
         Player::query()
             ->where('match_id', $this->match->id)
             ->where('match_player', $matchPlayerId)
             ->update([
-                'name' => $playerInfo['n'],
+                'name'   => $playerInfo['n'],
+                'is_bot' => array_key_exists('skill', $playerInfo),
             ]);
     }
 
@@ -184,7 +188,7 @@ class IdTech3Base extends AbstractParser
             'action'        => 'kill',
             'match_player'  => $eventDetails[2],
             'target_player' => $eventDetails[3],
-            'action_type'   => strtolower($eventDetails[9]),
+            'action_type'   => strtolower(end($eventDetails)),
         ]);
     }
 

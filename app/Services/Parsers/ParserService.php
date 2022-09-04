@@ -6,6 +6,8 @@ use App\Exceptions\MatchAlreadyProcessedException;
 use App\Exceptions\ParserNotFoundException;
 use App\Models\Game;
 use App\Models\GameMatch;
+use Exception;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -55,7 +57,7 @@ class ParserService
     public function load(string $matchInitRow): self
     {
         $this->matchConfig = $this->mapConfigValues($matchInitRow);
-        $this->game = $this->findGameForMatch($this->matchConfig['gamename']);
+        $this->game = $this->findGameForMatch($this->matchConfig);
         $this->parser = $this->loadParserFromGame();
 
         return $this;
@@ -90,10 +92,19 @@ class ParserService
             return;
         }
 
-        $this->parser
-            ->game($this->game)
-            ->matchEvents($this->matchEvents)
-            ->parse($match, $this->matchConfig);
+        try {
+            return $this->parser
+                ->matchEvents($this->matchEvents)
+                ->parse($match, $this->matchConfig);
+
+            GameMatch::query()
+                ->where('hash', $hash)
+                ->update(['status' => 3]);
+        } catch (Exception $e) {
+            Log::error($e->getMessage());
+
+            return;
+        }
     }
 
     protected function createMatchRecord(string $hash)
@@ -103,14 +114,20 @@ class ParserService
             ->first();
 
         if ($exists) {
-            // throw new MatchAlreadyProcessedException('Match with hash ' . $hash . ' has already been procssed');
+            throw new MatchAlreadyProcessedException('Match with hash ' . $hash . ' has already been procssed');
         }
 
         return GameMatch::create([
-            'id'      => Str::uuid(),
-            'hash'    => $hash,
-            'game_id' => $this->game->id,
-            'flags'   => json_encode($this->matchConfig),
+            'id'          => Str::uuid(),
+            'hash'        => $hash,
+            'game_id'     => $this->game->id,
+            'mapname'     => $this->parser->getMapName($this->matchConfig),
+            'hostname'    => $this->parser->getHostname($this->matchConfig),
+            'gametype'    => $this->parser->getGameType($this->matchConfig),
+            'time_limit'  => $this->parser->getTimeLimit($this->matchConfig),
+            'event_limit' => $this->parser->getEventLimit($this->matchConfig),
+            'flags'       => json_encode($this->matchConfig),
+            'version'     => $this->parser->getVersion($this->matchConfig),
         ]);
     }
 
@@ -138,10 +155,23 @@ class ParserService
         return $gameInfo;
     }
 
-    public function findGameForMatch(string $gamename): Game
+    public function findGameForMatch(array $matchConfig): Game
     {
-        return Game::query()
-            ->where('identifier', $gamename)
-            ->first();
+        foreach (Game::all() as $game) {
+
+            foreach ($game->identifiers as $identifier) {
+                $result[$identifier['key']] = false;
+
+                if (Arr::has($matchConfig, $identifier['key'])) {
+                    $result[$identifier['key']] = Str::contains(Arr::get($matchConfig, $identifier['key']), $identifier['value']);
+                }
+            }
+
+            if (!in_array(false, $result)) {
+                return $game;
+            }
+        }
+
+        throw new ParserNotFoundException();
     }
 }
