@@ -51,5 +51,5 @@
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
-    "bin": ["idtech-parser"]
+    "bin": ["gamelogs"]
 }
