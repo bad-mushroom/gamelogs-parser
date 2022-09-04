@@ -1,40 +1,39 @@
-<a href="https://supportukrainenow.org/"><img src="https://raw.githubusercontent.com/vshymanskyy/StandWithUkraine/main/banner-direct.svg" width="100%"></a>
+                                     _
+                                    | |
+           __ _  __ _ _ __ ___   ___| | ___   __ _ ___
+          / _` |/ _` | '_ ` _ \ / _ \ |/ _ \ / _` / __|
+         | (_| | (_| | | | | | |  __/ | (_) | (_| \__ \
+          \__, |\__,_|_| |_| |_|\___|_|\___/ \__, |___/
+           __/ |                              __/ |
+          |___/                              |___/
 
-------
 
-<p align="center">
-    <img title="Laravel Zero" height="100" src="https://raw.githubusercontent.com/laravel-zero/docs/master/images/logo/laravel-zero-readme.png" />
-</p>
+A simple commandline utility for parsing idtech game engine based log files such as those used with Quake III mods.
 
-<p align="center">
-  <a href="https://github.com/laravel-zero/framework/actions"><img src="https://img.shields.io/github/workflow/status/laravel-zero/framework/Tests.svg" alt="Build Status"></img></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/dt/laravel-zero/framework.svg" alt="Total Downloads"></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/v/laravel-zero/framework.svg?label=stable" alt="Latest Stable Version"></a>
-  <a href="https://packagist.org/packages/laravel-zero/framework"><img src="https://img.shields.io/packagist/l/laravel-zero/framework.svg" alt="License"></a>
-</p>
+## Usage
 
-<h4> <center>This is a <bold>community project</bold> and not an official Laravel one </center></h4>
+### Queue Log Files
 
-Laravel Zero was created by [Nuno Maduro](https://github.com/nunomaduro) and [Owen Voke](https://github.com/owenvoke), and is a micro-framework that provides an elegant starting point for your console application. It is an **unofficial** and customized version of Laravel optimized for building command-line applications.
+All log files are stored in an "incoming" directory where the queue command will scan, deduplicate, and prep the file for being parsed.
 
-- Built on top of the [Laravel](https://laravel.com) components.
-- Optional installation of Laravel [Eloquent](https://laravel-zero.com/docs/database/), Laravel [Logging](https://laravel-zero.com/docs/logging/) and many others.
-- Supports interactive [menus](https://laravel-zero.com/docs/build-interactive-menus/) and [desktop notifications](https://laravel-zero.com/docs/send-desktop-notifications/) on Linux, Windows & MacOS.
-- Ships with a [Scheduler](https://laravel-zero.com/docs/task-scheduling/) and  a [Standalone Compiler](https://laravel-zero.com/docs/build-a-standalone-application/).
-- Integration with [Collision](https://github.com/nunomaduro/collision) - Beautiful error reporting
+```
+./gamelogs logs:queue
+```
 
-------
+### Parse Log File
 
-## Documentation
+Once a log file has been queued, the parsing command will take over. The parser will automatically determine the game/mod contained withing the log file and call the appropriate class file configured for that spaecific game.
 
-For full documentation, visit [laravel-zero.com](https://laravel-zero.com/).
+```
+./gamelogs logs:parse <log-hash>
+```
 
-## Support the development
-**Do you like this project? Support it by donating**
+Each game's match is parsed in to a SQLite database and its data organized in to:
+- Matches
+- Players
+- Game Activity
+  -- Kills
+  -- Item Collection
+  -- Chats
+  -- Player Joined/Left
 
-- PayPal: [Donate](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=66BYDWAT92N6L)
-- Patreon: [Donate](https://www.patreon.com/nunomaduro)
-
-## License
-
-Laravel Zero is an open-source software licensed under the MIT license.
