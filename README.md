@@ -1,11 +1,11 @@
-                                                           _
-                                                          | |
-                                 __ _  __ _ _ __ ___   ___| | ___   __ _ ___
-                                / _` |/ _` | '_ ` _ \ / _ \ |/ _ \ / _` / __|
-                               | (_| | (_| | | | | | |  __/ | (_) | (_| \__ \
-                                \__, |\__,_|_| |_| |_|\___|_|\___/ \__, |___/
-                                 __/ |                              __/ |
-                                |___/                              |___/
+                                                        _
+                                                       | |
+                              __ _  __ _ _ __ ___   ___| | ___   __ _ ___
+                             / _` |/ _` | '_ ` _ \ / _ \ |/ _ \ / _` / __|
+                            | (_| | (_| | | | | | |  __/ | (_) | (_| \__ \
+                             \__, |\__,_|_| |_| |_|\___|_|\___/ \__, |___/
+                              __/ |                              __/ |
+                             |___/                              |___/
 
 
 A simple stand-alone command-line utility for parsing idtech  based log files such as those used with Quake III mods.
@@ -37,3 +37,10 @@ Each game's match is parsed in to a SQLite database and its data organized in to
   -- Chats
   -- Player Joined/Left
 
+## Installation
+
+TBD
+
+## Game Support
+
+Gamelogs currently supports idTech3 based games (Quake 3, JediKnight, etc).
