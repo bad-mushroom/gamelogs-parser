@@ -9,6 +9,30 @@ class GamesSeeder extends Seeder
 {
     protected array $seeds = [
         [
+            'id'          => 'jedi-knight-2-jedi-outcast',
+            'name'        => 'Jedi Knight 2: Jedi Outcast',
+            'description' => '',
+            'identifiers' => [
+                [
+                    'key'   => 'gamename',
+                    'value' => 'basejk'
+                ],
+            ],
+            'parser' => 'JK2Parser',
+        ],
+        [
+            'id'          => 'quake-iii-arena-excessive-plus',
+            'name'        => 'Quake III Arena - Excessive Plus',
+            'description' => 'Excessive Plus mod for Quake III',
+            'identifiers' => [
+                [
+                    'key'   => 'gamename',
+                    'value' => 'excessiveplus'
+                ],
+            ],
+            'parser' => 'Q3AParser',
+        ],
+        [
             'id'          => 'quake-iii-arena-retail',
             'name'        => 'Quake III Arena',
             'description' => 'Original id release of Quake 3.',
