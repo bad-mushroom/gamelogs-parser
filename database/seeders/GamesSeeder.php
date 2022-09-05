@@ -54,6 +54,15 @@ class GamesSeeder extends Seeder
                 ['key' => 'gamename', 'value' => 'q3urt42'],
             ],
             'parser' => 'IOQ3UrtParser',
+        ],
+        [
+            'id'          => 'ioq3-smokin-guns',
+            'name'        => 'Smokin Guns',
+            'description' => 'Smokin Guns standalone game using ioq3',
+            'identifiers' => [
+                ['key' => 'gamename', 'value' => 'smokinguns'],
+            ],
+            'parser' => 'IOQ3SGParser',
         ]
     ];
 
