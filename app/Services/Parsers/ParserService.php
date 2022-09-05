@@ -8,7 +8,6 @@ use App\Models\Game;
 use App\Models\GameMatch;
 use Exception;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ParserService
@@ -56,9 +55,13 @@ class ParserService
      */
     public function load(string $matchInitRow): self
     {
-        $this->matchConfig = $this->mapConfigValues($matchInitRow);
-        $this->game = $this->findGameForMatch($this->matchConfig);
-        $this->parser = $this->loadParserFromGame();
+        try {
+            $this->matchConfig = $this->mapConfigValues($matchInitRow);
+            $this->game = $this->findGameForMatch($this->matchConfig);
+            $this->parser = $this->loadParserFromGame();
+        } catch (Exception $e) {
+            throw $e;
+        }
 
         return $this;
     }
@@ -87,8 +90,6 @@ class ParserService
             $hash = md5(serialize($this->matchEvents));
             $match = $this->createMatchRecord($hash);
         } catch (MatchAlreadyProcessedException $e) {
-            Log::error($e->getMessage());
-
             return;
         }
 
@@ -101,9 +102,7 @@ class ParserService
                 ->where('hash', $hash)
                 ->update(['status' => 3]);
         } catch (Exception $e) {
-            Log::error($e->getMessage());
-
-            return;
+            return false;
         }
     }
 
@@ -158,7 +157,6 @@ class ParserService
     public function findGameForMatch(array $matchConfig): Game
     {
         foreach (Game::all() as $game) {
-
             foreach ($game->identifiers as $identifier) {
                 $result[$identifier['key']] = false;
 
@@ -172,6 +170,6 @@ class ParserService
             }
         }
 
-        throw new ParserNotFoundException();
+        throw new ParserNotFoundException('Parser not found for match.');
     }
 }

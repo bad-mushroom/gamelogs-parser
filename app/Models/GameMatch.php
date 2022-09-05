@@ -23,6 +23,7 @@ class GameMatch extends Model
         'event_limit',
         'time_limit',
         'mapname',
+        'version',
     ];
 
     public function game()

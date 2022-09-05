@@ -158,13 +158,12 @@ class IdTech3Base extends AbstractParser
         $matchPlayerId = $details[2];
         $playerInfo = $this->mapConfigValues('\\' . $details[3]);
 
-
         Player::query()
             ->where('match_id', $this->match->id)
             ->where('match_player', $matchPlayerId)
             ->update([
                 'name'   => $playerInfo['n'],
-                'is_bot' => array_key_exists('skill', $playerInfo),
+                'is_bot' => (int) array_key_exists('skill', $playerInfo) ?? false,
             ]);
     }
 

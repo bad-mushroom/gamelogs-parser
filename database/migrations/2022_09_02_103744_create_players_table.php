@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('team')->nullable();
             $table->string('match_connect_time')->nullable();
             $table->string('match_join_time')->nullable();
-            $table->boolean('is_bot')->false();
+            $table->boolean('is_bot')->default('false');
             $table->timestamps();
         });
     }

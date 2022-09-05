@@ -17,6 +17,7 @@ class Player extends Model
         'match_connect_time',
         'name',
         'team',
+        'is_bot',
     ];
 
     public function match()

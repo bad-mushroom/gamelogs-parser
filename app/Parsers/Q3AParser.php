@@ -32,7 +32,9 @@ class Q3AParser extends IdTech3Base implements ParserInterface
 
     public function getGameType(array $config): string
     {
-        return self::GAME_TYPES[$config['g_gametype']];
+        $type = preg_replace('~\D~', '', $config['g_gametype']);
+
+        return self::GAME_TYPES[$type];
     }
 
     public function getTimeLimit(array $config): string
@@ -48,9 +50,9 @@ class Q3AParser extends IdTech3Base implements ParserInterface
     public function getEventLimit(array $config): ?string
     {
         if ($config['g_gametype'] < self::TYPE_CTF) {
-            $limit = $config['capturelimit'];
+            $limit = isset($config['capturelimit']) ? $config['capturelimit'] : 0;
         } else {
-            $limit = $config['fraglimit'];
+            $limit = isset($config['fraglimit']) ? $config['fraglimit'] : 0;
         }
 
         return $limit;

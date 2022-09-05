@@ -20,6 +20,27 @@ All log files are stored in an "incoming" directory where the queue command will
 ./gamelogs logs:queue
 ```
 
+#### Example
+
+```
+$ ./gamelogs logs:queue
+13 Game logs to Queue
+Checking Q3_1.31.log: ✔
+Queuing Q3_1.31.log: ✔
+Checking games copy.log: ✔
+Queuing games copy.log: ✔
+Checking games.log: ✔
+Queuing games.log: ✔
+Checking ioq3.log: ✔
+Queuing ioq3.log: ✔
+Checking ioq3_1.36.log: ✔
+Queuing ioq3_1.36.log: ✔
+Checking q3-67.log: ✔
+Queuing q3-67.log: ✔
+Checking q3_1.11.log: ✔
+Queuing q3_1.11.log: ✔
+```
+
 ### Parse Log File
 
 Once a log file has been queued, the parsing command will take over. The parser will automatically determine the game/mod contained withing the log file and call the appropriate class file configured for that spaecific game.

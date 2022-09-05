@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('original_filename');
             $table->string('filename');
             $table->tinyInteger('status')->default(1);
+            $table->string('status_message')->nullable();
             $table->timestamp('created_at');
         });
     }
