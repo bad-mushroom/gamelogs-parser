@@ -22,6 +22,7 @@ class IdTech3Base extends AbstractParser
         'Item',
         'Kill',
         'say',
+        'sayteam',
         'Exit',
         'ShutdownGame',
     ];
@@ -32,6 +33,8 @@ class IdTech3Base extends AbstractParser
      * @var GameMatch
      */
     protected GameMatch $match;
+
+    protected array $botIds = [];
 
     /**
      * Parse match activity.
@@ -158,12 +161,18 @@ class IdTech3Base extends AbstractParser
         $matchPlayerId = $details[2];
         $playerInfo = $this->mapConfigValues('\\' . $details[3]);
 
+        $isBot = (int) array_key_exists('skill', $playerInfo) ?? false;
+
+        if ($isBot) {
+            $this->botIds[] = $matchPlayerId;
+        }
+
         Player::query()
             ->where('match_id', $this->match->id)
             ->where('match_player', $matchPlayerId)
             ->update([
                 'name'   => $playerInfo['n'],
-                'is_bot' => (int) array_key_exists('skill', $playerInfo) ?? false,
+                'is_bot' => $isBot,
             ]);
     }
 
@@ -230,11 +239,45 @@ class IdTech3Base extends AbstractParser
             ->where('match_id', $this->match->id)
             ->first();
 
+        if (env('SETTING_IGNORE_BOT_CHAT') && in_array($player->id, $this->botIds)) {
+            return;
+        }
+
         return Activity::create([
             'id'            => Str::uuid(),
             'match_id'      => $this->match->id,
             'time'          => $time,
             'action'        => 'chat',
+            'match_player'  => $player->match_player,
+            'action_type'   => $eventDetails[3],
+        ]);
+    }
+
+    /**
+     * Team hat message.
+     *
+     * @param string $time
+     * @param string $event
+     * @return void
+     */
+    public function parseSayteam(string $time, string $event)
+    {
+        $eventDetails = $this->stringToArray($event, ':');
+
+        $player = Player::query()
+            ->where('name', trim($eventDetails[2]))
+            ->where('match_id', $this->match->id)
+            ->first();
+
+        if (env('SETTING_IGNORE_BOT_CHAT') && in_array($player->id, $this->botIds)) {
+            return;
+        }
+
+        return Activity::create([
+            'id'            => Str::uuid(),
+            'match_id'      => $this->match->id,
+            'time'          => $time,
+            'action'        => 'team_chat',
             'match_player'  => $player->match_player,
             'action_type'   => $eventDetails[3],
         ]);

@@ -15,12 +15,10 @@ class GamesSeeder extends Seeder
             'identifiers' => [
                 [
                     'key'   => 'version',
-                    'match' => 'contains',
                     'value' => 'Q3'
                 ],
                 [
                     'key'   => 'gamename',
-                    'match' => 'contains',
                     'value' => 'baseq3'
                 ],
             ],
@@ -33,12 +31,10 @@ class GamesSeeder extends Seeder
             'identifiers' => [
                 [
                     'key'   => 'version',
-                    'match' => 'contains',
                     'value' => 'ioq3'
                 ],
                 [
                     'key'   => 'gamename',
-                    'match' => 'contains',
                     'value' => 'baseq3'
                 ],
             ],
