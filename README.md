@@ -55,9 +55,13 @@ Each game's match is parsed in to a SQLite database and its data organized in to
 - Matches
 - Players
 - Game Activity
+
   -- Kills
+
   -- Item Collection
+
   -- Chats
+
   -- Player Joined/Left
 
 
@@ -70,10 +74,27 @@ Parse Log: cccd3b15698b87a211f7699fd9aba5c5.log: ✔
 Parse Log: e88abe78e689bb81e330080eaa0598af.log: ✔
 ```
 
-## Installation
+## Installation (Development)
 
-TBD
+Gamelogs uses [Laravel-Zero](https://github.com/laravel-zero/laravel-zero).
+
+1. Clone this repo
+2. Install dependencies `composer install`
+3. Copy `.env.example` to `.env` and set values to your preferecnes.
+4. Create database: `./gamelogs db:migrate --seed`
+
+### Game Seeder
+
+The `GamesSeeder` class contains supported games. Look at examples to see what it's doing - it's pretty straight forward. The `identfiers` key is what will be parsed from the log file to determine the game.
+
+### Parsers
+
+Each game has a parser class in `App\Parsers`. Parsers should extend a base game engine parser for reusibilty between games.
+
+## Installation (Server Admins)
+
+Not sure yet :D. Laravel Zero supports stand-alone phar archives but this is untested. Stay tuned.
 
 ## Game Support
 
-Gamelogs currently supports idTech3 based games (Quake 3, JediKnight, etc).
+Gamelogs currently supports idTech3 based games (Quake 3, JediKnight II, etc).
