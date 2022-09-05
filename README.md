@@ -47,7 +47,9 @@ Once a log file has been queued, the parsing command will take over. The parser 
 
 The parser will also attempt to de-duplicate individual matches and ignore incomplete ones.
 
+You can parse all log files or provide the log hash to target a specific one.
 ```
+./gamelogs logs:parse
 ./gamelogs logs:parse <log-hash>
 ```
 
