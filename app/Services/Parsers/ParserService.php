@@ -157,6 +157,8 @@ class ParserService
     public function findGameForMatch(array $matchConfig): Game
     {
         foreach (Game::all() as $game) {
+            $result = [];
+
             foreach ($game->identifiers as $identifier) {
                 $result[$identifier['key']] = false;
 
@@ -168,6 +170,7 @@ class ParserService
             if (!in_array(false, $result)) {
                 return $game;
             }
+
         }
 
         throw new ParserNotFoundException('Parser not found for match.');

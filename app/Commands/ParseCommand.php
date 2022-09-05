@@ -105,6 +105,8 @@ class ParseCommand extends AbstractLogCommand
                         );
                 });
             }
+        } else {
+            $this->info('Nothing to do');
         }
     }
 
@@ -113,11 +115,13 @@ class ParseCommand extends AbstractLogCommand
         if (!empty($hash)) {
             $gamelogs = DB::table('gamelogs')
                 ->where('status', self::STATUS_QUEUED)
+                ->orWhere('status', self::STATUS_FAILED)
                 ->where('hash', $hash)
                 ->get();
         } else {
             $gamelogs = DB::table('gamelogs')
                 ->where('status', self::STATUS_QUEUED)
+                ->orWhere('status', self::STATUS_FAILED)
                 ->get();
         }
 

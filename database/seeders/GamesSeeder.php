@@ -13,10 +13,7 @@ class GamesSeeder extends Seeder
             'name'        => 'Jedi Knight 2: Jedi Outcast',
             'description' => '',
             'identifiers' => [
-                [
-                    'key'   => 'gamename',
-                    'value' => 'basejk'
-                ],
+                [ 'key' => 'gamename', 'value' => 'basejk' ],
             ],
             'parser' => 'JK2Parser',
         ],
@@ -25,10 +22,7 @@ class GamesSeeder extends Seeder
             'name'        => 'Quake III Arena - Excessive Plus',
             'description' => 'Excessive Plus mod for Quake III',
             'identifiers' => [
-                [
-                    'key'   => 'gamename',
-                    'value' => 'excessiveplus'
-                ],
+                [ 'key' => 'gamename', 'value' => 'excessiveplus' ],
             ],
             'parser' => 'Q3AParser',
         ],
@@ -37,14 +31,8 @@ class GamesSeeder extends Seeder
             'name'        => 'Quake III Arena',
             'description' => 'Original id release of Quake 3.',
             'identifiers' => [
-                [
-                    'key'   => 'version',
-                    'value' => 'Q3'
-                ],
-                [
-                    'key'   => 'gamename',
-                    'value' => 'baseq3'
-                ],
+                [ 'key' => 'version', 'value' => 'Q3' ],
+                [ 'key' => 'gamename', 'value' => 'baseq3' ],
             ],
             'parser' => 'Q3AParser',
         ],
@@ -53,16 +41,19 @@ class GamesSeeder extends Seeder
             'name'        => 'Quake III Arena',
             'description' => 'Open-source ioquake3 version',
             'identifiers' => [
-                [
-                    'key'   => 'version',
-                    'value' => 'ioq3'
-                ],
-                [
-                    'key'   => 'gamename',
-                    'value' => 'baseq3'
-                ],
+                ['key' => 'version', 'value' => 'ioq3'],
+                ['key' => 'gamename', 'value' => 'baseq3'],
             ],
             'parser' => 'Q3AParser',
+        ],
+        [
+            'id'          => 'ioq3-ut',
+            'name'        => 'Urban Terror',
+            'description' => 'Urban Terror standalone game using ioq3',
+            'identifiers' => [
+                ['key' => 'gamename', 'value' => 'q3urt42'],
+            ],
+            'parser' => 'IOQ3UrtParser',
         ]
     ];
 

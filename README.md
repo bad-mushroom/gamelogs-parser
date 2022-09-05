@@ -60,6 +60,16 @@ Each game's match is parsed in to a SQLite database and its data organized in to
   -- Chats
   -- Player Joined/Left
 
+
+#### Example
+
+```
+$ ./gamelogs logs:parse
+Parse Log: c5ee281adfa06af4933552eb5fc9a6be.log: ✔
+Parse Log: cccd3b15698b87a211f7699fd9aba5c5.log: ✔
+Parse Log: e88abe78e689bb81e330080eaa0598af.log: ✔
+```
+
 ## Installation
 
 TBD

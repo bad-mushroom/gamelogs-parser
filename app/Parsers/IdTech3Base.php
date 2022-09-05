@@ -34,6 +34,11 @@ class IdTech3Base extends AbstractParser
      */
     protected GameMatch $match;
 
+    /**
+     * Match player IDs for bots.
+     *
+     * @var array
+     */
     protected array $botIds = [];
 
     /**
@@ -171,7 +176,7 @@ class IdTech3Base extends AbstractParser
             ->where('match_id', $this->match->id)
             ->where('match_player', $matchPlayerId)
             ->update([
-                'name'   => $playerInfo['n'],
+                'name'   => $playerInfo['n'] ?? ' UnamedPlayer',
                 'is_bot' => $isBot,
             ]);
     }
